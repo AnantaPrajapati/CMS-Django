@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notice</title>
+
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <style>
+      .message-container {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+      }
+      .message {
+        background-color: #f8d7da;
+        color: #721c24;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #f5c6cb;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main">
+      <div class="container">
+        <h1>Content Management system</h1>
+        <div class="search-container">
+          <input
+            type="text"
+            placeholder="Enter movie name here..."
+            id="movie-name"
+          />
+          <button id="search-btn">Search</button>
+        </div>
+        <div id="result"></div>
+
+        <!-- Movies List -->
+        <div id="movies-list">
+          <h2>Movies List</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Images</th>
+                <th>Title</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for notice in notices %}
+              <tr>
+                <td>
+                  <img
+                    src="{{ movie.movie_icon.url }}"
+                    alt="{{ movie.movie_title }}"
+                    style="width: 50px; height: auto"
+                  />
+                </td>
+                <td>{{ notice.image }}</td>
+                <td>{{ notice.title }}</td>
+                <td>{{ notice.description }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="9">No notices added yet.</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <!-- User Authenticated -->
+        {% if user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post" style="display: inline">
+          {% csrf_token %}
+          <button type="submit" id="logout-btn">Logout</button>
+          {% comment %} href="{% url 'AddMovie' user.id %}" {% endcomment %}
+        </form>
+        <a class="btn btn-primary" id="Movie-btn">Add Movie</a>
+        {% endif %}
+      </div>
+    </div>
+    <script src="{% static 'script.js' %}"></script>
+    {% if messages %}
+    <div id="message-container" class="message-container">
+      {% for message in messages %}
+      <div class="message{% if message.tags %} {{ message.tags }}{% endif %}">
+        {{ message }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        var messageContainer = document.getElementById("message-container");
+        if (messageContainer) {
+          setTimeout(function () {
+            messageContainer.style.display = "none";
+          }, 5000);
+        }
+      });
+    </script>
+  </body>
+</html>
